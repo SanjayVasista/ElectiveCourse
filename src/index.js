@@ -31,6 +31,9 @@ app.get('/subDisplay', async(req, res)=>{
     res.render('subDisplay')
 })
 
+app.get('/dashboard', async(req, res)=>{
+    res.render('dashboardHome')
+})
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

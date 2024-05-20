@@ -27,3 +27,68 @@ body {
 .title p{
     margin: 5px 0px;
 }
+
+.sidebar{
+    width: 20%;
+    margin: 10px 20px;
+    border-radius: 10px;
+    background-color: #FAFAFB;
+    padding: 10px;
+    height: 75dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.sidefac{
+    width: 90%;
+    background-color: white;
+    border-radius: 10px;
+    margin: 10px auto;
+    padding: 20px 10px;
+}
+
+.sideSelect {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 20px;
+}
+.sideContent{
+    display: flex;
+    align-items: flex-end;
+    margin: 10px 0px;
+}
+
+.sideContent img{
+    filter: grayscale(1);
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+}
+
+.sideContent a{
+    font-size: 20px;
+    text-decoration: none;
+    color: black;
+}
+
+.sideContent :hover{
+    color: #6D31ED;
+    scale: 1.05;
+}
+
+.sideLogout{
+    margin: 20px;
+    font-size: 20px;
+}
+
+.sideLogout a{
+    color: black;
+    text-decoration: none;
+}
+
+.dashbg{
+    display: flex;
+    align-content: center;
+
+}
