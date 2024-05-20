@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elective Course Registration</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/subjectDisplay.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <%- include('header.ejs') %>
+        <% subjects=[ { name: "Web Technology" , code: "CSE-3700" , max: 60, current: 60 }, 
+            { name: "Software Engineering" , code: "CSE-4400" , max: 60,current: 6 }, 
+            {name:"Database Management Systems",code:"DBMGY4901",max:60,current:30}]; %>
+        <div class="display">
+            <div class="display-sub">
+                <h1>Pattern Recognition</h1>
+                <p>21CS771</p>
+                <a href="https://www.mcehassan.ac.in/assets/departments/CS/syllabus/3rd_Year_Scheme_and_Syllabus-2023-24.pdf">Know Your Syllabus</a>
+            </div>
+            <div class="query">
+                <h3>For any queries</h3>
+                <p>Contact</p>
+                <hr>
+                <div class="faculty">
+                    <p>Faculty Advisor</p>
+                    <a href="#">9898987898</a>
+                </div>
+            </div>
+        </div>
+            
+</body>
+<script>
+
+</script>
+
+</html>

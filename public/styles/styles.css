@@ -1,0 +1,29 @@
+* {
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    width: 100%;
+}
+
+.head{
+    padding: 20px 30px;
+    display: flex;
+    gap: 0px 20px;
+    align-items: left;
+}
+
+.logo img{
+    width: 75px;
+}
+
+.title h1{
+    margin: 5px 0px;
+}
+
+.title p{
+    margin: 5px 0px;
+}
