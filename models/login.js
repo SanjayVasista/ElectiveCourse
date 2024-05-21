@@ -1,10 +1,10 @@
 import mysql from "mysql2"
 
 const pool = mysql.createPool({
-    host: '127.0.0.1',
-    user: 'root',
-    password: '1234',
-    database: 'elective',
+    host: 'sql12.freesqldatabase.com',
+    user: 'sql12707946',
+    password: 'pNL8YVacQh',
+    database: 'sql12707946',
 }).promise()
 
 // async function value(){
