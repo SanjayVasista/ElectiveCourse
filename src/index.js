@@ -15,8 +15,9 @@ app.get('/', async (req, res) => {
     res.render("login");
 })
 
-app.post('login', async(req, res)=>{
-    res.redirect('branchSelection')
+app.post('/login', async(req, res)=>{
+    console.log(req.body.username)
+    console.log(req.body.password)
 })
 
 app.get('/branchSelection', async(req, res)=>{

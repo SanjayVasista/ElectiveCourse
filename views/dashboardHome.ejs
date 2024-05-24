@@ -13,17 +13,64 @@
 </head>
 
 <body>
-    <%- include('header.ejs') %>
-    <div class="dashbg">
-        <%- include('sidepanel.ejs') %>
-        <section class="dash">
-            helo
-        </section>
-    </div>
-    
-            
+    <% const oddSem=["1st Semester", "3rd Semester" , "5th Semester" , "7th Semester" ] %>
+        <% const evenSem=["2nd Semester", "4th Semester" , "6th Semester" ] %>
+            <%- include('header.ejs') %>
+                <div class="dashbg">
+                    <%- include('sidepanel.ejs') %>
+                        <section class="dash">
+                            <h2>Dashboard</h2>
+                            <div class="semSel">
+                                <select id="even-odd">
+                                    <option value="odd">Odd Semester</option>
+                                    <option value="even">Even Semester</option>
+                                </select>
+                                <input type="submit" value="Get" id="getSem" onclick="handleClick()">
+                            </div>
+                            <section class="semesters">
+                                <div class="oddSem">
+                                    <ul>
+                                        <% oddSem.forEach(sem=> { %>
+                                            <li><%- sem %></li>
+                                        <% }); %>
+                                    </ul>
+                                    
+                                </div>
+                                <div class="evenSem">
+                                    <ul>
+                                        <% evenSem.forEach(sem=> { %>
+                                            <li><%- sem %></li>
+                                        <% }); %>
+                                    </ul>
+                                </div>
+                            </section>
+                        </section>
+
+
+                </div>
+
+
 </body>
 <script>
+    let getSem = document.getElementById("getSem");
+    let even = document.querySelector(".evenSem");
+    even.style.display = "none";
+    let odd = document.querySelector(".oddSem");
+    function handleClick() {
+        
+        getSem.addEventListener('click', () => {
+            let value = document.getElementById("even-odd").value
+            console.log(value)
+            if (value === "odd") {
+                even.style.display = "none";
+                odd.style.display = "block";
+            } else if (value === "even") {
+                even.style.display = "block";
+                odd.style.display = "none";
+            }
+        })
+    }
+
 
 </script>
 

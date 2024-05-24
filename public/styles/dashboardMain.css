@@ -1,0 +1,49 @@
+.dash{
+    width: 75%;
+    margin: 5px 10px;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.dash h2{
+    color:#6D31ED;
+    margin: 0px 5px 5px;
+}
+
+.semSel{
+    margin: 10px 5px;
+}
+
+option{
+    background-color: black;
+    color: white;
+    padding: 10px;
+}
+#even-odd{
+    line-height: 20px;
+    border: 0px;
+    font-size: 15px;
+}
+
+.oddSem, .evenSem{
+    margin: 15px 0px;
+
+}
+
+.oddSem ul, .evenSem ul{
+    list-style: none;
+    display: flex;
+    gap: 5px 20px;
+}
+
+.oddSem li, .evenSem li{
+    background-color: #F5F1FE;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.oddSem li:hover, .evenSem li:hover{
+    box-shadow: 0px 2px 5px #bfbfbf;
+}
