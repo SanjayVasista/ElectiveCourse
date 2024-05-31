@@ -47,3 +47,13 @@ option{
 .oddSem li:hover, .evenSem li:hover{
     box-shadow: 0px 2px 5px #bfbfbf;
 }
+
+.sub-creation{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 20px 0px;
+    box-shadow: 2px 0px 5px;
+    width: 80%;
+    padding: 20px 30px;
+}

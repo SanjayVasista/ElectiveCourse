@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elective Course Registration</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/dashboardMain.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <% const oddSem=["1st Semester", "3rd Semester" , "5th Semester" , "7th Semester" ] %>
+        <% const evenSem=["2nd Semester", "4th Semester" , "6th Semester" ] %>
+            <%- include('header.ejs') %>
+                <div class="dashbg">
+                    <%- include('sidepanel.ejs') %>
+                        <section class="dash">
+                            <h2>Dashboard</h2>
+                            <div class="semSel">
+                                <select id="even-odd">
+                                    <option value="odd">Odd Semester</option>
+                                    <option value="even">Even Semester</option>
+                                </select>
+                                <input type="submit" value="Get" id="getSem" onclick="handleClick()">
+                            </div>
+                            <section class="semesters">
+                                <div class="oddSem">
+                                    <ul>
+                                        <% oddSem.forEach(sem=> { %>
+                                            <li id="<%- sem %>"><%- sem %></li>
+                                        <% }); %>
+                                    </ul>
+                                    
+                                </div>
+                                <div class="evenSem">
+                                    <ul>
+                                        <% evenSem.forEach(sem=> { %>
+                                            <li id="<%- sem %>"><%- sem %></li>
+                                        <% }); %>
+                                    </ul>
+                                </div>
+                            </section>
+                            <section>
+                                <h3>Add New Course for <%=  %></h3>
+                            </section>
+                            <section class="sub-creation">
+                                <form action="">
+                                    <input type="text" name="courseTitle" id="courseTitle" placeholder="Course Title" required>
+                                    <input type="text" name="courseCode" id="courseCode" placeholder="Course Code" required>
+                                    <input type="number" name="limit" id="limit" placeholder="Maximum Limit" required>
+                                    <input type="submit" value="Add to List" id="createCourse">
+                                </form>
+                            </section>
+                        </section>
+
+
+                </div>
+
+
+</body>
+<script>
+    let getSem = document.getElementById("getSem");
+    let even = document.querySelector(".evenSem");
+    even.style.display = "none";
+    let odd = document.querySelector(".oddSem");
+    function handleClick() {
+        
+        getSem.addEventListener('click', () => {
+            let value = document.getElementById("even-odd").value
+            console.log(value)
+            if (value === "odd") {
+                even.style.display = "none";
+                odd.style.display = "block";
+            } else if (value === "even") {
+                even.style.display = "block";
+                odd.style.display = "none";
+            }
+        })
+    }
+
+
+</script>
+
+</html>

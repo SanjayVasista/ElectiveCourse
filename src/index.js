@@ -36,6 +36,10 @@ app.get('/dashboard', async(req, res)=>{
     res.render('dashboardHome')
 })
 
+app.get('/creation', async(req, res)=>{
+    res.render('dashboardCreation')
+})
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
