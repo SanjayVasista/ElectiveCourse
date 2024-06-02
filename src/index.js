@@ -6,10 +6,10 @@ import session from "express-session";
 import mysql from "mysql2";
 
 const pool = mysql.createPool({
-    host: 'sql12.freesqldatabase.com',
-    user: 'sql12707946',
-    password: 'pNL8YVacQh',
-    database: 'sql12707946',
+    host: 'localhost',
+    user: 'root',
+    password: '1234',
+    database: 'elective',
     timezone: 'Z'
 }).promise()
 
@@ -21,7 +21,7 @@ app.use(
         secret: "TOPSECRETWORD",
         resave: false,
         saveUninitialized: true,
-        cookie:{
+        cookie: {
             maxAge: 1000 * 60 * 5,
         }
     })
@@ -37,6 +37,11 @@ app.set('view engine', 'ejs');
 //static file path
 app.use(express.static("public"))
 
+async function getSemRegisterList(sem) {
+    let [details] = await pool.query(`select * from sem${sem};`);
+    return details;
+}
+
 app.get('/', async (req, res) => {
     res.render("login");
 })
@@ -47,6 +52,26 @@ app.post('/login', passport.authenticate("local", {
 })
 )
 
+app.post('/faculty', async (req, res) => {
+    const oddSem = ["1st Semester", "3rd Semester", "5th Semester", "7th Semester"];
+    const evenSem = ["2nd Semester", "4th Semester", "6th Semester"]
+    let username = req.body.username;
+    let password = req.body.password;
+    let cred = await pool.query("select * from admin where username = ?", [username]);
+    let passDb = cred[0][0].password.toISOString().split('T')[0]
+    if (passDb === password) {
+        res.render('dashboardHome', {
+            oddSem: oddSem,
+            evenSem: evenSem,
+            currentSem: courses[0],
+            currentSemCourses: courses[1]
+        })
+    } else {
+        res.redirect('/')
+    }
+
+})
+
 app.get('/branchSelection', async (req, res) => {
     if (req.isAuthenticated()) {
         res.render('branchSelection');
@@ -55,34 +80,168 @@ app.get('/branchSelection', async (req, res) => {
     }
 })
 
-app.post('/branch', async (req, res)=>{
-    if(req.isAuthenticated()){
-        let dbBranch = req.user.username.substr(5,2); 
+app.post('/branch', async (req, res) => {
+    if (req.isAuthenticated()) {
+        let dbBranch = req.user.username.substr(5, 2);
         let selectBranch = req.body.branch;
         let semester = req.body.sem;
-        
-        if(dbBranch === selectBranch){
-            res.render('subjectSelection')
-        }
+        (async () => {
+            try {
+                let selSem = await getSemRegisterList(semester);
+                if (dbBranch === selectBranch) {
+                    res.render('subjectSelection', {
+                        subjects: selSem,
+                    })
+                }
+            } catch (err) {
+                console.error("Error fetching course list:", err);
+            }
+        })();
     }
-    
 })
 
 app.get('/subjectSelection', async (req, res) => {
-    res.render('subjectSelection')
+    if (req.isAuthenticated()) {
+        (async () => {
+            try {
+                let selSem = await getSemRegisterList(semester);
+                res.render('subjectSelection', {
+                    subjects: selSem,
+                })
+            } catch (err) {
+                console.error("Error fetching course list:", err);
+            }
+        })();
+    }
+})
+
+app.post('/courseRegister', async(req, res)=>{
+        let selSubCode = req.body.course;
+        let subTitle = "";
+        (async () => {
+            try {
+                for(let i=1; i<=7; i++){
+                    let [details] = await pool.query(`select registration from sem${i} where courseCode = ?;`, [selSubCode]);
+                    if(details.length >0){
+                        let curReg = details[0].registration++;
+                        await pool.query(`update sem${i} set registration = ? where courseCode = ?;`, [curReg, selSubCode]);
+
+                    }
+                }                for(let i=1; i<=7; i++){
+                    let [details] = await pool.query(`select courseTitle from sem${i} where courseCode = ?;`, [selSubCode]);
+                    if(details.length >0){
+                        subTitle = details[0].courseTitle;
+                    }
+                }
+                res.render('subDisplay',{
+                    subjectName: subTitle,
+                    subjectCode: selSubCode
+                })
+            } catch (err) {
+                console.error("Error fetching course list:", err);
+            }
+        })();
+        
+        
+        
+    
+    
+
 })
 
 app.get('/subDisplay', async (req, res) => {
-    res.render('subDisplay')
+    if(isAuthenticated()){
+        res.render('subDisplay',{
+            subjectName: subTitle,
+            subjectCode: selSubCode
+        })
+    }
 })
+
+
+
+
+app.post('/dash', (req, res) => {
+    const selectedSemester = req.body.selectedSemester;
+    courses[0] = selectedSemester;
+    let sem = courses[0].substring(0, 1);
+    (async () => {
+        try {
+            courses[1] = await getSemRegisterList(sem);
+        } catch (err) {
+            console.error("Error fetching course list:", err);
+        }
+    })();
+    res.redirect('dashboard')
+});
 
 app.get('/dashboard', async (req, res) => {
-    res.render('dashboardHome')
+    const oddSem = ["1st Semester", "3rd Semester", "5th Semester", "7th Semester"];
+    const evenSem = ["2nd Semester", "4th Semester", "6th Semester"]
+    res.render('dashboardHome', {
+        oddSem: oddSem,
+        evenSem: evenSem,
+        currentSem: courses[0],
+        currentSemCourses: courses[1]
+    })
 })
 
+
+let currentSem = "1st Semester";
+let currentList = [];
+
+async function getSemCourseList(sem) {
+    let [details] = await pool.query(`select * from sem${sem};`);
+    return details;
+}
+
+let courses = [currentSem, currentList]
+
+
+app.post('/sem', (req, res) => {
+    const selectedSemester = req.body.selectedSemester;
+    courses[0] = selectedSemester;
+    let sem = courses[0].substring(0, 1);
+    (async () => {
+        try {
+            courses[1] = await getSemCourseList(sem);
+        } catch (err) {
+            console.error("Error fetching course list:", err);
+        }
+    })();
+    res.redirect('creation')
+});
+
+
 app.get('/creation', async (req, res) => {
-    res.render('dashboardCreation')
+    const oddSem = ["1st Semester", "3rd Semester", "5th Semester", "7th Semester"];
+    const evenSem = ["2nd Semester", "4th Semester", "6th Semester"]
+    res.render('dashboardCreation', {
+        oddSem: oddSem,
+        evenSem: evenSem,
+        currentSem: courses[0],
+        currentSemCourses: courses[1]
+    })
 })
+
+// Submission of Forms
+for (let i = 1; i <= 7; i++) {
+    app.post(`/${i}`, async (req, res) => {
+        console.log(req.body.courseTitle, req.body.courseCode, req.body.limit)
+        try {
+            await pool.query(`insert into sem${i} values(?, ?, ?)`, [
+                req.body.courseTitle, req.body.courseCode, req.body.limit
+            ]
+            );
+
+        } catch (err) {
+            console.error("Error while inserting")
+        }
+
+    })
+}
+
+
 
 passport.use(
     new Strategy(async function verify(username, password, cb) {

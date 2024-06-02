@@ -4,10 +4,10 @@ import bcrypt from "bcrypt";
 const saltRounds = 10;
 
 const pool = mysql.createPool({
-    host: 'sql12.freesqldatabase.com',
-    user: 'sql12707946',
-    password: 'pNL8YVacQh',
-    database: 'sql12707946',
+    host: 'localhost',
+    user: 'root',
+    password: '1234',
+    database: 'elective',
     timezone: 'Z'
 }).promise()
 

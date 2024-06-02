@@ -13,41 +13,87 @@
 </head>
 
 <body>
-    <% const oddSem=["1st Semester", "3rd Semester" , "5th Semester" , "7th Semester" ] %>
-        <% const evenSem=["2nd Semester", "4th Semester" , "6th Semester" ] %>
-            <%- include('header.ejs') %>
-                <div class="dashbg">
-                    <%- include('sidepanel.ejs') %>
-                        <section class="dash">
-                            <h2>Dashboard</h2>
-                            <div class="semSel">
-                                <select id="even-odd">
-                                    <option value="odd">Odd Semester</option>
-                                    <option value="even">Even Semester</option>
-                                </select>
-                                <input type="submit" value="Get" id="getSem" onclick="handleClick()">
-                            </div>
-                            <section class="semesters">
-                                <div class="oddSem">
-                                    <ul>
-                                        <% oddSem.forEach(sem=> { %>
-                                            <li><%- sem %></li>
+    <%- include('header.ejs') %>
+        <div class="dashbg">
+            <%- include('sidepanel.ejs') %>
+                <section class="dash">
+                    <h2>Dashboard</h2>
+                    <div class="semSel">
+                        <select id="even-odd">
+                            <option value="odd">Odd Semester</option>
+                            <option value="even">Even Semester</option>
+                        </select>
+                        <input type="submit" value="Get" id="getSem" onclick="handleClick()">
+                    </div>
+                    <section class="semesters">
+                        <div class="oddSem">
+                            <ul>
+                                <form action="/dash" method="post">
+                                    <input type="hidden" name="selectedSemester" id="selectedSemesterOdd">
+                                    <% oddSem.forEach(sem=> { %>
+                                        <input type="submit" id="<%= sem %>" value="<%= sem %>"
+                                            onclick="setSelectedSemester('<%= sem %>')">
                                         <% }); %>
-                                    </ul>
-                                    
-                                </div>
-                                <div class="evenSem">
-                                    <ul>
-                                        <% evenSem.forEach(sem=> { %>
-                                            <li><%- sem %></li>
+                                </form>
+                            </ul>
+
+                        </div>
+                        <div class="evenSem">
+                            <ul>
+                                <form action="/dash" method="post">
+                                    <input type="hidden" name="selectedSemester" id="selectedSemesterEven">
+                                    <% evenSem.forEach(sem=> { %>
+                                        <input type="submit" id="<%= sem %>" value="<%= sem %>"
+                                            onclick="setSelectedSemester('<%= sem %>')">
                                         <% }); %>
-                                    </ul>
-                                </div>
-                            </section>
-                        </section>
+                                </form>
+                            </ul>
+                        </div>
+                    </section>
+                    <section>
+                        <h3><%= currentSem %> Courses
+                        </h3>
+                    </section>
+                    <section>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Course Title</th>
+                                    <th>Course Code</th>
+                                    <th>Registrations</th>
+                                    <th>Total Slots</th>
+                                    <th>Reports</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% currentSemCourses.forEach(course=> { %>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="merge">
+                                        </td>
+                                        <td>
+                                            <%= course.courseTitle %>
+                                        </td>
+                                        <td>
+                                            <%= course.courseCode %>
+                                        </td>
+                                        <td>
+                                            <%= course.registration %>
+                                        </td>
+                                        <td>
+                                            <%= course.maxLimit %>
+                                        </td>
+                                        <td><button>Export</button></td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </section>
+                </section>
 
 
-                </div>
+        </div>
 
 
 </body>
@@ -56,8 +102,9 @@
     let even = document.querySelector(".evenSem");
     even.style.display = "none";
     let odd = document.querySelector(".oddSem");
+    odd.style.display = "none";
     function handleClick() {
-        
+
         getSem.addEventListener('click', () => {
             let value = document.getElementById("even-odd").value
             console.log(value)
@@ -71,6 +118,11 @@
         })
     }
 
+
+    function setSelectedSemester(sem) {
+        document.getElementById('selectedSemesterEven').value = sem;
+        document.getElementById('selectedSemesterOdd').value = sem;
+    }
 
 </script>
 

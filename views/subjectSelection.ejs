@@ -14,34 +14,31 @@
 
 <body>
     <%- include('header.ejs') %>
-        <% subjects=[ { name: "Web Technology" , code: "CSE-3700" , max: 60, current: 60 }, 
-            { name: "Software Engineering" , code: "CSE-4400" , max: 60,current: 60 }, 
-            {name:"Database Management Systems",code:"DBMGY4901",max:60,current:30}]; %>
-            <form action="">
+            <form action="/courseRegister" method="post">
                 <div class="select-sub">
                     <h1>Select your desired Elective Course</h1>
                     <div class="select-cont">
                         <h3>Courses</h3>
                         <hr>
                         <div class="courses">
-                            <% subjects.forEach(function (item) { %>
+                            <% subjects.forEach((item) => { %>
                                 <div class="course-sel">
                                     <div class="course">
                                         <p class="course-name">
-                                            <%= item.name %>
+                                            <%= item.courseTitle %>
                                         </p>
                                         <p class="course-code">
-                                            <%= item.code %>
+                                            <%= item.courseCode %>
                                         </p>
                                     </div>
                                     <div class="course-select">
                                         <p class="course-status">
-                                            <span><%= (item.max===item.current) ? "Completed" : "" %></span>
+                                            <span><%= (item.maxLimit===item.registration) ? "Completed" : "" %></span>
                                         </p>
                                         <p>
-                                            <%= item.current %>/<%= item.max %>
+                                            <%= item.registration %>/<%= item.maxLimit %>
                                         </p>
-                                        <input type="radio" name="course" id="<%= item.code %>" value="<%= item.code %>" <%= (item.max===item.current) ? "disabled" : " " %>>
+                                        <input type="radio" name="course" id="<%= item.CourseCode %>" value="<%= item.courseCode %>" <%= (item.maxLimit===item.registration) ? "disabled" : " " %>>
                                     </div>
                                 </div>
     

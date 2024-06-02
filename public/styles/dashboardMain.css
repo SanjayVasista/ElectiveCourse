@@ -36,15 +36,16 @@ option{
     gap: 5px 20px;
 }
 
-.oddSem li, .evenSem li{
+.oddSem input, .evenSem input{
     background-color: #F5F1FE;
     padding: 20px;
     border-radius: 10px;
     font-size: 20px;
     font-weight: bold;
+    border: none;
 }
 
-.oddSem li:hover, .evenSem li:hover{
+.oddSem input:hover, .evenSem input:hover{
     box-shadow: 0px 2px 5px #bfbfbf;
 }
 
