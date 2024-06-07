@@ -14,14 +14,15 @@
 
 <body>
     <%- include('header.ejs') %>
-        <% subjects=[ { name: "Web Technology" , code: "CSE-3700" , max: 60, current: 60 }, 
-            { name: "Software Engineering" , code: "CSE-4400" , max: 60,current: 6 }, 
-            {name:"Database Management Systems",code:"DBMGY4901",max:60,current:30}]; %>
         <div class="display">
             <div class="display-sub">
-                <h1>Pattern Recognition</h1>
-                <p>21CS771</p>
-                <a href="https://www.mcehassan.ac.in/assets/departments/CS/syllabus/3rd_Year_Scheme_and_Syllabus-2023-24.pdf">Know Your Syllabus</a>
+                <h1>
+                    <%= subjectName %>
+                </h1>
+                <p>
+                    <%= subjectCode %>
+                </p>
+                <a href="#">Know Your Syllabus</a>
             </div>
             <div class="query">
                 <h3>For any queries</h3>
@@ -33,7 +34,7 @@
                 </div>
             </div>
         </div>
-            
+
 </body>
 <script>
 

@@ -15,7 +15,7 @@
 
         <div class="container" id="container">
             <div class="form-container sign-up-container">
-                <form action="signup">
+                <form action="/faculty" method="post">
                     <h1>Login</h1>
                     <span>Kindly loin with your credentials</span>
                     <div class="form-input">
@@ -28,12 +28,13 @@
                 </form>
             </div>
             <div class="form-container sign-in-container">
-                <form action="login">
+                <form action="/login" method="post">
                     <h1>Login</h1>
                     <span>Kindly loin with your USN</span>
                     <div class="form-input">
                         <label for="username">USN</label>
-                        <input type="text" name="username" placeholder="USN" required />
+                        <input type="text" name="username" placeholder="USN" size="10" maxlength="10" 
+                        style="text-transform:uppercase" required />
                         <label for="password">Password</label>
                         <input type="date" name="password" required />
                     </div>
