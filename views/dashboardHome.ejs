@@ -14,14 +14,88 @@
 
 <body>
     <%- include('header.ejs') %>
-    <div class="dashbg">
-        <%- include('sidepanel.ejs') %>
-        <section class="dash">
-            helo
-        </section>
-    </div>
-    
-            
+        <div class="dashbg">
+            <%- include('sidepanel.ejs') %>
+                <section class="dash">
+                    <h2>Dashboard</h2>
+                    <div class="semSel">
+                        <select id="even-odd">
+                            <option value="odd">Odd Semester</option>
+                            <option value="even">Even Semester</option>
+                        </select>
+                        <input type="submit" value="Get" id="getSem" onclick="handleClick()">
+                    </div>
+                    <section class="semesters">
+                        <div class="oddSem">
+                            <ul>
+                                <form action="/dash" method="post">
+                                    <input type="hidden" name="selectedSemester" id="selectedSemesterOdd">
+                                    <% oddSem.forEach(sem=> { %>
+                                        <input type="submit" id="<%= sem %>" value="<%= sem %>"
+                                            onclick="setSelectedSemester('<%= sem %>')">
+                                        <% }); %>
+                                </form>
+                            </ul>
+
+                        </div>
+                        <div class="evenSem">
+                            <ul>
+                                <form action="/dash" method="post">
+                                    <input type="hidden" name="selectedSemester" id="selectedSemesterEven">
+                                    <% evenSem.forEach(sem=> { %>
+                                        <input type="submit" id="<%= sem %>" value="<%= sem %>"
+                                            onclick="setSelectedSemester('<%= sem %>')">
+                                        <% }); %>
+                                </form>
+                            </ul>
+                        </div>
+                    </section>
+                    <section>
+                        <h3><%= currentSem %> Courses
+                        </h3>
+                    </section>
+                    <section>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Course Title</th>
+                                    <th>Course Code</th>
+                                    <th>Registrations</th>
+                                    <th>Total Slots</th>
+                                    <th>Reports</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% currentSemCourses.forEach(course=> { %>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="merge">
+                                        </td>
+                                        <td>
+                                            <%= course.courseTitle %>
+                                        </td>
+                                        <td>
+                                            <%= course.courseCode %>
+                                        </td>
+                                        <td>
+                                            <%= course.registration %>
+                                        </td>
+                                        <td>
+                                            <%= course.maxLimit %>
+                                        </td>
+                                        <td><button>Export</button></td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </section>
+                </section>
+
+
+        </div>
+
+
 </body>
 <script>
     let getSem = document.getElementById("getSem");
