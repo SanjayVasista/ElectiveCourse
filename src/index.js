@@ -6,6 +6,7 @@ import session from "express-session";
 import mysql from "mysql2";
 import path from "path";
 import flash from "express-flash";
+import { assert } from "console";
 
 const pool = mysql.createPool({
     host: 'localhost',
@@ -13,7 +14,8 @@ const pool = mysql.createPool({
     password: '1234',
     database: 'elective',
     timezone: 'Z'
-}).promise()
+}).promise();
+
 
 const app = express();
 const port = 3000;
@@ -24,7 +26,7 @@ app.use(
         resave: false,
         saveUninitialized: true,
         cookie: {
-            maxAge: 1000 * 60 * 5,
+            maxAge: 1000 * 60 * 60,
         }
     })
 );
@@ -55,39 +57,23 @@ app.get('/', async (req, res) => {
 })
 
 
-app.post('/login', passport.authenticate("local", {
+app.post('/login', passport.authenticate("login-user", {
     successRedirect: '/branchSelection',
     failureRedirect: '/',
-})
-)
+}));
 
 
-app.post('/faculty', async (req, res) => {
-    const oddSem = ["1st Semester", "3rd Semester", "5th Semester", "7th Semester"];
-    const evenSem = ["2nd Semester", "4th Semester", "6th Semester"]
-    let username = req.body.username;
-    let password = req.body.password;
-    let cred = await pool.query("select * from admin where username = ?", [username]);
-    let passDb = cred[0][0].password.toISOString().split('T')[0]
-    if (passDb === password) {
-        res.render('dashboardHome', {
-            oddSem: oddSem,
-            evenSem: evenSem,
-            currentSem: courses[0],
-            currentSemCourses: courses[1]
-        })
-    } else {
-        res.redirect('/')
-    }
-
-})
+app.post('/faculty', passport.authenticate("login-admin", {
+    successRedirect: '/dashboard',
+    failureRedirect: '/',
+}));
 
 app.get('/branchSelection', async (req, res) => {
     if (req.isAuthenticated()) {
         const { username } = req.user;
         const [details] = await pool.query(`SELECT * FROM details WHERE usn = ?`, [username]);
         if (details.length > 0) {
-            let sem = "sem"+ details[0].sem
+            let sem = "sem" + details[0].sem
             const [subDetails] = await pool.query(`SELECT * FROM ${sem} WHERE courseCode = ?`, [details[0].courseCode]);
             res.redirect('/subDisplay');
         } else {
@@ -148,7 +134,7 @@ app.post('/courseRegister', async (req, res) => {
                         await pool.query(`update sem${i} set registration = ? where courseCode = ?;`, [curReg, selSubCode]);
                         await pool.query(`insert into details values(?,?,?)`, [usn, selSubCode, i]);
                     }
-                } 
+                }
                 for (let i = 1; i <= 7; i++) {
                     let [details] = await pool.query(`select courseTitle from sem${i} where courseCode = ?;`, [selSubCode]);
                     if (details.length > 0) {
@@ -172,14 +158,15 @@ app.get('/subDisplay', async (req, res) => {
         const { username } = req.user;
         const [details] = await pool.query(`SELECT * FROM details WHERE usn = ?`, [username]);
         if (details.length > 0) {
-            let sem = "sem"+ details[0].sem
+            let sem = "sem" + details[0].sem
             const [subDetails] = await pool.query(`SELECT * FROM ${sem} WHERE courseCode = ?`, [details[0].courseCode]);
-        res.render('subDisplay', {
-            subjectName: subDetails[0].courseTitle,
-            subjectCode: subDetails[0].courseCode
-        })
+            res.render('subDisplay', {
+                subjectName: subDetails[0].courseTitle,
+                subjectCode: subDetails[0].courseCode
+            })
+        }
     }
-}})
+})
 
 
 
@@ -199,14 +186,19 @@ app.post('/dash', (req, res) => {
 });
 
 app.get('/dashboard', async (req, res) => {
-    const oddSem = ["1st Semester", "3rd Semester", "5th Semester", "7th Semester"];
-    const evenSem = ["2nd Semester", "4th Semester", "6th Semester"]
-    res.render('dashboardHome', {
-        oddSem: oddSem,
-        evenSem: evenSem,
-        currentSem: courses[0],
-        currentSemCourses: courses[1]
-    })
+    if (req.isAuthenticated()) {
+        const oddSem = ["1st Semester", "3rd Semester", "5th Semester", "7th Semester"];
+        const evenSem = ["2nd Semester", "4th Semester", "6th Semester"]
+        res.render('dashboardHome', {
+            oddSem: oddSem,
+            evenSem: evenSem,
+            currentSem: courses[0],
+            currentSemCourses: courses[1]
+        })
+    } else {
+        res.redirect('/');
+    }
+
 })
 
 
@@ -232,39 +224,66 @@ app.post('/sem', (req, res) => {
             console.error("Error fetching course list:", err);
         }
     })();
-    res.redirect(302, 'creation')
+    res.redirect('creation')
 });
 
 
 app.get('/creation', async (req, res) => {
-    const oddSem = ["1st Semester", "3rd Semester", "5th Semester", "7th Semester"];
-    const evenSem = ["2nd Semester", "4th Semester", "6th Semester"]
-    let sem = courses[0].substring(0, 1);
-    (async () => {
-        try {
-            courses[1] = await getSemCourseList(sem);
-        } catch (err) {
-            console.error("Error fetching course list:", err);
-        }
-    })();
-    res.render('dashboardCreation', {
-        oddSem: oddSem,
-        evenSem: evenSem,
-        currentSem: courses[0],
-        currentSemCourses: courses[1]
-    })
+    if(req.isAuthenticated()){
+        const oddSem = ["1st Semester", "3rd Semester", "5th Semester", "7th Semester"];
+        const evenSem = ["2nd Semester", "4th Semester", "6th Semester"]
+        let sem = courses[0].substring(0, 1);
+        (async () => {
+            try {
+                courses[1] = await getSemCourseList(sem);
+                res.render('dashboardCreation', {
+                    oddSem: oddSem,
+                    evenSem: evenSem,
+                    currentSem: courses[0],
+                    currentSemCourses: courses[1]
+                })
+            } catch (err) {
+                console.error("Error fetching course list:", err);
+            }
+        })();
+    }else{
+        res.redirect('/');
+    }
+})
+app.post('/edit', async (req, res)=>{
+    let sem = courses[0].substring(0, 1)
+    let title = req.body.courseTitle;
+    let code = req.body.courseCode;
+    let uppperCode = code.toUpperCase();
+    let codePrev = req.body.courseCodePrev;
+    let limit = req.body.courseLimit;
+    await pool.query(`update sem${sem} set courseTitle = ?, courseCode = ?,  maxlimit = ? where courseCode = ?`, [title,uppperCode, limit, codePrev])
+    res.redirect('creation')
+})
+
+app.post('/delete', (req, res)=>{
+    let courseCode = req.body.deleteCourse
+    let sem = courses[0].substring(0, 1)
+    pool.query(`delete from sem${sem} where courseCode = ?`, [courseCode])
+    res.redirect('creation')
+})
+
+app.post('/deleteEntry', async (req, res)=>{
+    let semUser = req.body.deleteEntry;
+    await pool.query(`delete from sem${semUser}`)
+    res.redirect('creation')
 })
 
 // Submission of Forms
 for (let i = 1; i <= 7; i++) {
     app.post(`/${i}`, async (req, res) => {
-        console.log(req.body.courseTitle, req.body.courseCode, req.body.limit)
+        let upperCode = req.body.courseCode.toUpperCase();
         try {
             await pool.query(`insert into sem${i} values(?, ?, ?, ?)`, [
-                req.body.courseTitle, req.body.courseCode, req.body.limit, 0
+                req.body.courseTitle, upperCode, req.body.limit, 0
             ]
             );
-            res.redirect(302, 'creation')
+            res.redirect('creation')
 
         } catch (err) {
             console.error("Error while inserting")
@@ -273,9 +292,34 @@ for (let i = 1; i <= 7; i++) {
     })
 }
 
+app.post('/logout', function (req, res, next) {
+    req.logout(function (err) {
+        if (err) { return next(err); }
+        res.redirect('/');
+    });
+});
 
+passport.use('login-admin',
+    new Strategy(async function verify(username, password, cb) {
+        try {
+            let cred = await pool.query("select * from admin where username = ?", [username]);
+            if (cred) {
+                let passDb = cred[0][0].password.toISOString().split('T')[0]
+                if (passDb === password) {
+                    return cb(null, username);
+                } else {
+                    return cb(null, false);
+                }
+            } else {
+                return cb("User not found");
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    })
+);
 
-passport.use(
+passport.use('login-user',
     new Strategy(async function verify(username, password, cb) {
         try {
             const result = await pool.query("SELECT * FROM login WHERE username = ? ", [
