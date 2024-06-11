@@ -4,9 +4,7 @@ import passport from "passport";
 import { Strategy } from "passport-local";
 import session from "express-session";
 import mysql from "mysql2";
-import path from "path";
-import flash from "express-flash";
-import { assert } from "console";
+import Exceljs from "exceljs";
 
 const pool = mysql.createPool({
     host: 'localhost',
@@ -229,7 +227,7 @@ app.post('/sem', (req, res) => {
 
 
 app.get('/creation', async (req, res) => {
-    if(req.isAuthenticated()){
+    if (req.isAuthenticated()) {
         const oddSem = ["1st Semester", "3rd Semester", "5th Semester", "7th Semester"];
         const evenSem = ["2nd Semester", "4th Semester", "6th Semester"]
         let sem = courses[0].substring(0, 1);
@@ -246,32 +244,81 @@ app.get('/creation', async (req, res) => {
                 console.error("Error fetching course list:", err);
             }
         })();
-    }else{
+    } else {
         res.redirect('/');
     }
 })
-app.post('/edit', async (req, res)=>{
+app.post('/edit', async (req, res) => {
     let sem = courses[0].substring(0, 1)
     let title = req.body.courseTitle;
     let code = req.body.courseCode;
     let uppperCode = code.toUpperCase();
     let codePrev = req.body.courseCodePrev;
     let limit = req.body.courseLimit;
-    await pool.query(`update sem${sem} set courseTitle = ?, courseCode = ?,  maxlimit = ? where courseCode = ?`, [title,uppperCode, limit, codePrev])
+    await pool.query(`update sem${sem} set courseTitle = ?, courseCode = ?,  maxlimit = ? where courseCode = ?`, [title, uppperCode, limit, codePrev])
     res.redirect('creation')
 })
 
-app.post('/delete', (req, res)=>{
+app.post('/delete', (req, res) => {
     let courseCode = req.body.deleteCourse
     let sem = courses[0].substring(0, 1)
     pool.query(`delete from sem${sem} where courseCode = ?`, [courseCode])
     res.redirect('creation')
 })
 
-app.post('/deleteEntry', async (req, res)=>{
+app.post('/deleteEntry', async (req, res) => {
     let semUser = req.body.deleteEntry;
     await pool.query(`delete from sem${semUser}`)
     res.redirect('creation')
+})
+
+
+app.post('/export', async (req, res) => {
+
+    let sem = req.body.sem;
+    let courseTitle = req.body.courseTitle;
+    let courseCode = req.body.courseCode;
+
+    try{
+        const [result] = await pool.query(`select d.usn, s.name from details d, student s where d.courseCode = ? and d.usn = s.usn`, [courseCode])
+        const jsonData = JSON.parse(JSON.stringify(result));
+
+        const workbook = new Exceljs.Workbook();
+        const worksheet = workbook.addWorksheet('Sheet1');
+        worksheet.columns = [
+            { header: "Sl No", key: 'slno', width: 5 },
+            { header: 'USN', key: 'usn', width: 20 },
+            { header: 'Name', key: 'name', width: 40 },
+        ];
+        jsonData.forEach((rowData, index) => {
+            worksheet.addRow([(index + 1), rowData.usn, rowData.name])
+        });
+    
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet').setHeader("Content-Disposition", "attachment; filename=" + courseTitle + ".xlsx");
+    
+        await workbook.xlsx.write(res);
+        res.end();    
+    }catch(err){
+        console.log(err)
+    }
+    
+})
+
+app.post('/merge', async (req, res)=>{
+    let srcCode = req.body.srcCode;
+    let destCode = req.body.destCode;
+    let sem = req.body.sem;
+
+    const [srcCount] = await pool.query(`select registration from sem${sem} where courseCode = ?`, [srcCode]);
+    const [destCount] = await pool.query(`select registration from sem${sem} where courseCode = ?`, [destCode]);
+    if(srcCount[0] === undefined || destCount[0] === undefined){
+        res.redirect(302, 'dashboard');
+    }else{
+        await pool.query(`update sem${sem} set registration = ? where courseCode = ?`, [srcCount[0].registration + destCount[0].registration, destCode]);
+        await pool.query(`update sem${sem} set registration = ? where courseCode = ?`, [0, srcCode])
+        await pool.query(`update details set courseCode = ? where courseCode = ?`, [destCode, srcCode])
+        res.redirect(302, 'dashboard');
+    }
 })
 
 // Submission of Forms
@@ -304,7 +351,7 @@ passport.use('login-admin',
         try {
             let cred = await pool.query("select * from admin where username = ?", [username]);
             if (cred) {
-                let passDb = cred[0][0].password.toISOString().split('T')[0]
+                let passDb = cred[0][0].password.toISOString().split('T')[0];
                 if (passDb === password) {
                     return cb(null, username);
                 } else {
