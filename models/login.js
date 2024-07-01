@@ -1,16 +1,17 @@
 import mysql from "mysql2";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+
+dotenv.config();
+const pool = mysql.createPool({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    timezone: 'Z'
+}).promise();
 
 const saltRounds = 10;
-
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '1234',
-    database: 'elective',
-    timezone: 'Z'
-}).promise()
-
 
 const result = await pool.query("select * from student")
 

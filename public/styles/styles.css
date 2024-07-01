@@ -82,11 +82,18 @@ body {
     font-size: 20px;
 }
 
-.sideLogout a{
+.sideLogout button{
     color: black;
     text-decoration: none;
+    border: none;
+    background-color: #FAFAFB;
+    font-size: 20px;
 }
 
+.sideLogout button:hover{
+    color: #6D31ED;
+    scale: 1.05;
+}
 .dashbg{
     display: flex;
     align-content: center;

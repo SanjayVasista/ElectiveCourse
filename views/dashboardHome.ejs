@@ -13,6 +13,36 @@
 </head>
 
 <body>
+    <section>
+        <form action="/merge" method="post" class="popup">
+            <div>
+                <p>You can merge only two courses at a time.</p>
+                <p>Select one as destination course to which source course details gets merged</p>
+                <h2>Courses:</h2>
+                <ul>
+                    <% for(let course of currentSemCourses){ %>
+                        <li><%= course.courseTitle %> : <%= course.courseCode %> : <%= course.registration %> </li>
+                    <% } %>
+                </ul>
+            </div>
+            <div>
+                <label for="destCode">
+                    Destination Course Code
+                </label>
+                <input type="text" name="destCode" id="destCode" style="text-transform:uppercase">
+            </div>
+            <div>
+                <label for="srcCode">
+                    Source Course Code
+                </label>
+                <input type="text" name="srcCode" id="srcCode" style="text-transform:uppercase">
+            </div>
+            <div>
+                <input type="submit" value="Merge Student Details">
+                <input type="hidden" name="sem" value="<%= currentSem.substring(0,1) %>">
+            </div>
+        </form>
+    </section>
     <%- include('header.ejs') %>
         <div class="dashbg">
             <%- include('sidepanel.ejs') %>
@@ -51,14 +81,14 @@
                         </div>
                     </section>
                     <section>
-                        <h3><%= currentSem %> Courses
+                        <h3>
+                            <%= currentSem %> Courses
                         </h3>
                     </section>
                     <section>
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Select</th>
                                     <th>Course Title</th>
                                     <th>Course Code</th>
                                     <th>Registrations</th>
@@ -69,9 +99,6 @@
                             <tbody>
                                 <% currentSemCourses.forEach(course=> { %>
                                     <tr>
-                                        <td>
-                                            <input type="checkbox" name="merge">
-                                        </td>
                                         <td>
                                             <%= course.courseTitle %>
                                         </td>
@@ -84,11 +111,23 @@
                                         <td>
                                             <%= course.maxLimit %>
                                         </td>
-                                        <td><button>Export</button></td>
+                                        <td>
+                                            <form action="/export" method="post">
+                                                <input type="hidden" name="sem"
+                                                    value="<%= currentSem.substring(0,1) %>">
+                                                <input type="hidden" name="courseTitle"
+                                                    value="<%= course.courseTitle %>">
+                                                <input type="hidden" name="courseCode" value="<%= course.courseCode %>">
+                                                <input type="submit" value="Export">
+                                            </form>
+                                        </td>
                                     </tr>
                                     <% }); %>
                             </tbody>
                         </table>
+                        <div>
+                            <button onclick="handleMerge()">Merge Details</button>
+                        </div>
                     </section>
                 </section>
 
@@ -124,6 +163,9 @@
         document.getElementById('selectedSemesterOdd').value = sem;
     }
 
+    function handleMerge(){
+        document.querySelector(".popup").style.display = "block";
+    }
 </script>
 
 </html>
