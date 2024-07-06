@@ -51,9 +51,18 @@ async function getSemRegisterList(sem) {
     let [details] = await pool.query(`select * from sem${sem};`);
     return details;
 }
+let screenWidthSize = 0;
+app.post('/screen-width', (req, res) => {
+    const screenWidth = req.body.width;
+    screenWidthSize = screenWidth;
+});
 
 app.get('/', async (req, res) => {
-    res.render("login");
+    if (screenWidthSize < 480) {
+        res.render("loginMobile");
+    } else {
+        res.render("login");
+    }
 })
 
 
@@ -281,7 +290,7 @@ app.post('/export', async (req, res) => {
     let courseTitle = req.body.courseTitle;
     let courseCode = req.body.courseCode;
 
-    try{
+    try {
         const [result] = await pool.query(`select d.usn, s.name from details d, student s where d.courseCode = ? and d.usn = s.usn`, [courseCode])
         const jsonData = JSON.parse(JSON.stringify(result));
 
@@ -295,27 +304,27 @@ app.post('/export', async (req, res) => {
         jsonData.forEach((rowData, index) => {
             worksheet.addRow([(index + 1), rowData.usn, rowData.name])
         });
-    
+
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet').setHeader("Content-Disposition", "attachment; filename=" + courseTitle + ".xlsx");
-    
+
         await workbook.xlsx.write(res);
-        res.end();    
-    }catch(err){
+        res.end();
+    } catch (err) {
         console.log(err)
     }
-    
+
 })
 
-app.post('/merge', async (req, res)=>{
+app.post('/merge', async (req, res) => {
     let srcCode = req.body.srcCode;
     let destCode = req.body.destCode;
     let sem = req.body.sem;
 
     const [srcCount] = await pool.query(`select registration from sem${sem} where courseCode = ?`, [srcCode]);
     const [destCount] = await pool.query(`select registration from sem${sem} where courseCode = ?`, [destCode]);
-    if(srcCount[0] === undefined || destCount[0] === undefined){
+    if (srcCount[0] === undefined || destCount[0] === undefined) {
         res.redirect(302, 'dashboard');
-    }else{
+    } else {
         await pool.query(`update sem${sem} set registration = ? where courseCode = ?`, [srcCount[0].registration + destCount[0].registration, destCode]);
         await pool.query(`update sem${sem} set registration = ? where courseCode = ?`, [0, srcCode])
         await pool.query(`update details set courseCode = ? where courseCode = ?`, [destCode, srcCode])

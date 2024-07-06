@@ -13,9 +13,12 @@
 </head>
 
 <body>
-    <section>
+    <section class="background">
         <form action="/merge" method="post" class="popup">
-            <div>
+            <div class="cancel" onclick="handleCancel()">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+            <div class="instr">
                 <p>You can merge only two courses at a time.</p>
                 <p>Select one as destination course to which source course details gets merged</p>
                 <h2>Courses:</h2>
@@ -80,16 +83,16 @@
                             </ul>
                         </div>
                     </section>
-                    <section>
+                    <section class="sem-course-heading">
                         <h3>
                             <%= currentSem %> Courses
                         </h3>
                     </section>
-                    <section>
+                    <section class="dash-table">
                         <table>
                             <thead>
-                                <tr>
-                                    <th>Course Title</th>
+                                <tr class="table-header">
+                                    <th class="courseTitle">Course Title</th>
                                     <th>Course Code</th>
                                     <th>Registrations</th>
                                     <th>Total Slots</th>
@@ -99,7 +102,7 @@
                             <tbody>
                                 <% currentSemCourses.forEach(course=> { %>
                                     <tr>
-                                        <td>
+                                        <td class="courseTitle">
                                             <%= course.courseTitle %>
                                         </td>
                                         <td>
@@ -118,15 +121,15 @@
                                                 <input type="hidden" name="courseTitle"
                                                     value="<%= course.courseTitle %>">
                                                 <input type="hidden" name="courseCode" value="<%= course.courseCode %>">
-                                                <input type="submit" value="Export">
+                                                <input type="submit" value="Export" class="export">
                                             </form>
                                         </td>
                                     </tr>
                                     <% }); %>
                             </tbody>
                         </table>
-                        <div>
-                            <button onclick="handleMerge()">Merge Details</button>
+                        <div class="merge-btn-div">
+                            <button onclick="handleMerge()" class="merge-btn">Merge Details</button>
                         </div>
                     </section>
                 </section>
@@ -165,6 +168,12 @@
 
     function handleMerge(){
         document.querySelector(".popup").style.display = "block";
+        document.querySelector(".background").style.display = "block";
+    }
+
+    function handleCancel(){
+        document.querySelector(".popup").style.display = "none";
+        document.querySelector(".background").style.display = "none";
     }
 </script>
 

@@ -14,8 +14,11 @@
 </head>
 
 <body>
-    <section>
+    <section class="background">
         <form action="edit" method="post" class="popup">
+            <div class="cancel" onclick="handleCancel()">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
             <div>
                 <label for="courseTitle">
                     Course Title
@@ -77,7 +80,7 @@
                             </ul>
                         </div>
                     </section>
-                    <section>
+                    <section class="sem-course-heading">
                         <h3>Add New Course for <%= currentSem %>
                         </h3>
                     </section>
@@ -87,15 +90,15 @@
                             <input type="text" name="courseCode" id="courseCode" placeholder="Course Code"
                                 style="text-transform:uppercase" required>
                             <input type="number" name="limit" id="limit" placeholder="Maximum Limit" required>
-                            <input type="submit" value="Add to List" id="createCourse">
+                            <input type="submit" value="Add to List" id="createCourse" class="createCourse">
                         </form>
                     </section>
-                    <section>
+                    <section class="dash-table">
                         <table>
                             <thead>
                                 <tr>
                                     <th>Delete Details</th>
-                                    <th>Course Title</th>
+                                    <th class="courseTitle">Course Title</th>
                                     <th>Course Code</th>
                                     <th>Slot Limit</th>
                                     <th>Edit details</th>
@@ -111,7 +114,7 @@
                                                     value="<%= course.courseCode %>">
                                             </form>
                                         </td>
-                                        <td>
+                                        <td class="courseTitle">
                                             <%= course.courseTitle %>
                                         </td>
                                         <td>
@@ -120,16 +123,20 @@
                                         <td>
                                             <%= course.maxLimit %>
                                         </td>
-                                        <td><button onclick="handleChange('<%= course.courseTitle %>', '<%= course.courseCode %>', '<%= course.maxLimit %>')">Edit</button></td>
+                                        <td>
+                                            <button onclick="handleChange('<%= course.courseTitle %>', '<%= course.courseCode %>', '<%= course.maxLimit %>')" class="export">
+                                                Edit
+                                            </button>
+                                        </td>
                                     </tr>
                                     <% } %>
                             </tbody>
                         </table>
                     </section>
-                    <section>
+                    <section class="merge-btn-div">
                         <form action="deleteEntry" method="post">
                             <input type="hidden" name="deleteEntry" value='<%= currentSem.substr(0,1) %>'>
-                            <input type="submit" value="Delete All Entries">
+                            <input type="submit" value="Delete All Entries" class="merge-btn">
                         </form>
                     </section>
                 </section>

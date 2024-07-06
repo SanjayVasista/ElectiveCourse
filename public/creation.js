@@ -24,6 +24,7 @@ function setSelectedSemester(sem) {
 }
 
 function handleChange(cTitle, cCode, max) {
+    document.querySelector(".background").style.display = "block";
     document.querySelector(".popup").style.display = "block";
     document.getElementById("updateTitle").value = cTitle;
     document.getElementById("updateCode").value = cCode;
@@ -32,3 +33,7 @@ function handleChange(cTitle, cCode, max) {
 
 }
 
+function handleCancel(){
+    document.querySelector(".popup").style.display = "none";
+    document.querySelector(".background").style.display = "none";
+}
