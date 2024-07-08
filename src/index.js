@@ -19,6 +19,7 @@ const pool = mysql.createPool({
 
 const app = express();
 const port = 3000;
+const saltRounds = 10;
 
 app.use(
     session({
@@ -51,18 +52,9 @@ async function getSemRegisterList(sem) {
     let [details] = await pool.query(`select * from sem${sem};`);
     return details;
 }
-let screenWidthSize = 0;
-app.post('/screen-width', (req, res) => {
-    const screenWidth = req.body.width;
-    screenWidthSize = screenWidth;
-});
 
 app.get('/', async (req, res) => {
-    if (screenWidthSize < 480) {
-        res.render("loginMobile");
-    } else {
-        res.render("login");
-    }
+    res.render('login');
 })
 
 
@@ -417,6 +409,31 @@ passport.serializeUser((user, cb) => {
 passport.deserializeUser((user, cb) => {
     cb(null, user);
 });
+
+async function addUserDetails() {
+    const result = await pool.query("select * from student")
+
+    result[0].map(student => {
+        let username = student.usn;
+        let dob = student.dob.toISOString().split('T')[0];
+        const sql = 'INSERT INTO login (username, password) VALUES (?, ?)';
+
+        bcrypt.hash(dob, saltRounds, async (err, hash) => {
+            if (err) {
+                console.error("Error while hashing ", err);
+            } else {
+                await pool.query(sql, [username, hash], (err, res) => {
+                    if (err) {
+                        console.error("An error while inserting")
+                    } else {
+                        console.log("Value inserted sucessfully")
+                    }
+                })
+            }
+        })
+    })
+}
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

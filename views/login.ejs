@@ -10,7 +10,7 @@
 
 </head>
 
-<body onload="getScreenWidth()">
+<body>
     <%- include('header.ejs') %>
 
         <div class="container" id="container">
@@ -73,17 +73,6 @@
         container.classList.remove("right-panel-active");
     });
 
-    //to get screen width
-    function getScreenWidth() {
-        const screenWidth = window.innerWidth;
-        fetch('/screen-width', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ width: screenWidth }),
-        });
-    }
 
 </script>
 

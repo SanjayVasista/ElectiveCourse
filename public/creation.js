@@ -2,7 +2,7 @@ let getSem = document.getElementById("getSem");
 let even = document.querySelector(".evenSem");
 even.style.display = "none";
 let odd = document.querySelector(".oddSem");
-odd.style.display = "none";
+odd.style.display = "block";
 function handleClick() {
 
     getSem.addEventListener('click', () => {

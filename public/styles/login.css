@@ -36,10 +36,11 @@ button {
     color: #FFFFFF;
     font-size: 12px;
     font-weight: bold;
-    padding: 12px 45px;
+    padding: 12px 20px;
     letter-spacing: 1px;
     text-transform: uppercase;
     transition: transform 80ms ease-in;
+    text-align: center;
 }
 
 button:active {
@@ -226,18 +227,15 @@ input {
     transform: translateX(20%);
 }
 
-.social-container {
-    margin: 20px 0;
-}
 
-.social-container a {
-    border: 1px solid #DDDDDD;
-    border-radius: 50%;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 5px;
-    height: 40px;
-    width: 40px;
+@media(max-width: 480px) {
+    .sign-in-container {
+        width: 100%;
+    }
+    .sign-up-container{
+        width: 0%;
+    }
+    .overlay-container{
+        display: none;
+    }
 }
-

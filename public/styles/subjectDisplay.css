@@ -24,9 +24,39 @@
     padding: 10px;
     border-radius: 10px;
     font-size: 20px;
+    margin: 20px auto;
+    display: block;
+    width: 60%;
+    text-align: center;
+}
+
+.query{
+    padding: 20px;   
+}
+
+.query h3{
+    margin: 10px 0px 15px;
+    font-size: 25px;
+}
+.query p{
+    margin: 10px 0px;
+    font-size: 20px;
+    color: rgb(49, 49, 49);
 }
 
 .faculty{
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+.faculty a{
+    text-decoration: none;
+    color: grey;
+}
+
+@media (max-width: 480px){
+    .display{
+        width: 90%;
+    }
 }
