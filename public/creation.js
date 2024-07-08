@@ -2,7 +2,7 @@ let getSem = document.getElementById("getSem");
 let even = document.querySelector(".evenSem");
 even.style.display = "none";
 let odd = document.querySelector(".oddSem");
-odd.style.display = "none";
+odd.style.display = "block";
 function handleClick() {
 
     getSem.addEventListener('click', () => {
@@ -24,6 +24,7 @@ function setSelectedSemester(sem) {
 }
 
 function handleChange(cTitle, cCode, max) {
+    document.querySelector(".background").style.display = "block";
     document.querySelector(".popup").style.display = "block";
     document.getElementById("updateTitle").value = cTitle;
     document.getElementById("updateCode").value = cCode;
@@ -32,3 +33,7 @@ function handleChange(cTitle, cCode, max) {
 
 }
 
+function handleCancel(){
+    document.querySelector(".popup").style.display = "none";
+    document.querySelector(".background").style.display = "none";
+}

@@ -19,6 +19,7 @@ const pool = mysql.createPool({
 
 const app = express();
 const port = 3000;
+const saltRounds = 10;
 
 app.use(
     session({
@@ -53,7 +54,7 @@ async function getSemRegisterList(sem) {
 }
 
 app.get('/', async (req, res) => {
-    res.render("login");
+    res.render('login');
 })
 
 
@@ -281,7 +282,7 @@ app.post('/export', async (req, res) => {
     let courseTitle = req.body.courseTitle;
     let courseCode = req.body.courseCode;
 
-    try{
+    try {
         const [result] = await pool.query(`select d.usn, s.name from details d, student s where d.courseCode = ? and d.usn = s.usn`, [courseCode])
         const jsonData = JSON.parse(JSON.stringify(result));
 
@@ -295,27 +296,27 @@ app.post('/export', async (req, res) => {
         jsonData.forEach((rowData, index) => {
             worksheet.addRow([(index + 1), rowData.usn, rowData.name])
         });
-    
+
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet').setHeader("Content-Disposition", "attachment; filename=" + courseTitle + ".xlsx");
-    
+
         await workbook.xlsx.write(res);
-        res.end();    
-    }catch(err){
+        res.end();
+    } catch (err) {
         console.log(err)
     }
-    
+
 })
 
-app.post('/merge', async (req, res)=>{
+app.post('/merge', async (req, res) => {
     let srcCode = req.body.srcCode;
     let destCode = req.body.destCode;
     let sem = req.body.sem;
 
     const [srcCount] = await pool.query(`select registration from sem${sem} where courseCode = ?`, [srcCode]);
     const [destCount] = await pool.query(`select registration from sem${sem} where courseCode = ?`, [destCode]);
-    if(srcCount[0] === undefined || destCount[0] === undefined){
+    if (srcCount[0] === undefined || destCount[0] === undefined) {
         res.redirect(302, 'dashboard');
-    }else{
+    } else {
         await pool.query(`update sem${sem} set registration = ? where courseCode = ?`, [srcCount[0].registration + destCount[0].registration, destCode]);
         await pool.query(`update sem${sem} set registration = ? where courseCode = ?`, [0, srcCode])
         await pool.query(`update details set courseCode = ? where courseCode = ?`, [destCode, srcCode])
@@ -408,6 +409,31 @@ passport.serializeUser((user, cb) => {
 passport.deserializeUser((user, cb) => {
     cb(null, user);
 });
+
+async function addUserDetails() {
+    const result = await pool.query("select * from student")
+
+    result[0].map(student => {
+        let username = student.usn;
+        let dob = student.dob.toISOString().split('T')[0];
+        const sql = 'INSERT INTO login (username, password) VALUES (?, ?)';
+
+        bcrypt.hash(dob, saltRounds, async (err, hash) => {
+            if (err) {
+                console.error("Error while hashing ", err);
+            } else {
+                await pool.query(sql, [username, hash], (err, res) => {
+                    if (err) {
+                        console.error("An error while inserting")
+                    } else {
+                        console.log("Value inserted sucessfully")
+                    }
+                })
+            }
+        })
+    })
+}
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

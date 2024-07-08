@@ -16,6 +16,11 @@ body {
     align-items: left;
 }
 
+.logo{
+    display: flex;
+    justify-content: center;
+    margin: auto 5px;
+}
 .logo img{
     width: 75px;
 }
