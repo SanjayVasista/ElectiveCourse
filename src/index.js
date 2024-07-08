@@ -12,7 +12,7 @@ const pool = mysql.createPool({
     database: 'elective',
     timezone: 'Z'
 }).promise()
-
+//new
 const app = express();
 const port = 3000;
 
