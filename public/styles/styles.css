@@ -16,6 +16,11 @@ body {
     align-items: left;
 }
 
+.logo{
+    display: flex;
+    justify-content: center;
+    margin: auto 5px;
+}
 .logo img{
     width: 75px;
 }
@@ -82,11 +87,18 @@ body {
     font-size: 20px;
 }
 
-.sideLogout a{
+.sideLogout button{
     color: black;
     text-decoration: none;
+    border: none;
+    background-color: #FAFAFB;
+    font-size: 20px;
 }
 
+.sideLogout button:hover{
+    color: #6D31ED;
+    scale: 1.05;
+}
 .dashbg{
     display: flex;
     align-content: center;

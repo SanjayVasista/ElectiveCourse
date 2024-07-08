@@ -13,6 +13,39 @@
 </head>
 
 <body>
+    <section class="background">
+        <form action="/merge" method="post" class="popup">
+            <div class="cancel" onclick="handleCancel()">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+            <div class="instr">
+                <p>You can merge only two courses at a time.</p>
+                <p>Select one as destination course to which source course details gets merged</p>
+                <h2>Courses:</h2>
+                <ul>
+                    <% for(let course of currentSemCourses){ %>
+                        <li><%= course.courseTitle %> : <%= course.courseCode %> : <%= course.registration %> </li>
+                    <% } %>
+                </ul>
+            </div>
+            <div>
+                <label for="destCode">
+                    Destination Course Code
+                </label>
+                <input type="text" name="destCode" id="destCode" style="text-transform:uppercase">
+            </div>
+            <div>
+                <label for="srcCode">
+                    Source Course Code
+                </label>
+                <input type="text" name="srcCode" id="srcCode" style="text-transform:uppercase">
+            </div>
+            <div>
+                <input type="submit" value="Merge Student Details">
+                <input type="hidden" name="sem" value="<%= currentSem.substring(0,1) %>">
+            </div>
+        </form>
+    </section>
     <%- include('header.ejs') %>
         <div class="dashbg">
             <%- include('sidepanel.ejs') %>
@@ -50,16 +83,16 @@
                             </ul>
                         </div>
                     </section>
-                    <section>
-                        <h3><%= currentSem %> Courses
+                    <section class="sem-course-heading">
+                        <h3>
+                            <%= currentSem %> Courses
                         </h3>
                     </section>
-                    <section>
+                    <section class="dash-table">
                         <table>
                             <thead>
-                                <tr>
-                                    <th>Select</th>
-                                    <th>Course Title</th>
+                                <tr class="table-header">
+                                    <th class="courseTitle">Course Title</th>
                                     <th>Course Code</th>
                                     <th>Registrations</th>
                                     <th>Total Slots</th>
@@ -69,10 +102,7 @@
                             <tbody>
                                 <% currentSemCourses.forEach(course=> { %>
                                     <tr>
-                                        <td>
-                                            <input type="checkbox" name="merge">
-                                        </td>
-                                        <td>
+                                        <td class="courseTitle">
                                             <%= course.courseTitle %>
                                         </td>
                                         <td>
@@ -84,11 +114,23 @@
                                         <td>
                                             <%= course.maxLimit %>
                                         </td>
-                                        <td><button>Export</button></td>
+                                        <td>
+                                            <form action="/export" method="post">
+                                                <input type="hidden" name="sem"
+                                                    value="<%= currentSem.substring(0,1) %>">
+                                                <input type="hidden" name="courseTitle"
+                                                    value="<%= course.courseTitle %>">
+                                                <input type="hidden" name="courseCode" value="<%= course.courseCode %>">
+                                                <input type="submit" value="Export" class="export">
+                                            </form>
+                                        </td>
                                     </tr>
                                     <% }); %>
                             </tbody>
                         </table>
+                        <div class="merge-btn-div">
+                            <button onclick="handleMerge()" class="merge-btn">Merge Details</button>
+                        </div>
                     </section>
                 </section>
 
@@ -102,7 +144,7 @@
     let even = document.querySelector(".evenSem");
     even.style.display = "none";
     let odd = document.querySelector(".oddSem");
-    odd.style.display = "none";
+    odd.style.display = "block";
     function handleClick() {
 
         getSem.addEventListener('click', () => {
@@ -124,6 +166,15 @@
         document.getElementById('selectedSemesterOdd').value = sem;
     }
 
+    function handleMerge(){
+        document.querySelector(".popup").style.display = "block";
+        document.querySelector(".background").style.display = "block";
+    }
+
+    function handleCancel(){
+        document.querySelector(".popup").style.display = "none";
+        document.querySelector(".background").style.display = "none";
+    }
 </script>
 
 </html>

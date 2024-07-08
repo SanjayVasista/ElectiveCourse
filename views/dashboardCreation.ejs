@@ -10,10 +10,39 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
 
 <body>
-
+    <section class="background">
+        <form action="edit" method="post" class="popup">
+            <div class="cancel" onclick="handleCancel()">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+            <div>
+                <label for="courseTitle">
+                    Course Title
+                </label>
+                <input type="text" name="courseTitle" value="" id="updateTitle">
+            </div>
+            <div>
+                <label for="courseCode">
+                    Course Code
+                </label>
+                <input type="text" name="courseCode" value="" id="updateCode">
+                <input type="hidden" name="courseCodePrev" value="" id="updatePrevCode">
+            </div>
+            <div>
+                <label for="courseLimit">
+                    Maximum Limit
+                </label>
+                <input type="number" name="courseLimit" value="" id="updateLimit">
+            </div>
+            <div>
+                <input type="submit" value="Update Changes">
+            </div>
+        </form>
+    </section>
     <%- include('header.ejs') %>
         <div class="dashbg">
             <%- include('sidepanel.ejs') %>
@@ -31,9 +60,10 @@
                             <ul>
                                 <form action="/sem" method="post">
                                     <input type="hidden" name="selectedSemester" id="selectedSemesterOdd">
-                                    <% oddSem.forEach(sem => { %>
-                                        <input type="submit" id="<%= sem %>" value="<%= sem %>" onclick="setSelectedSemester('<%= sem %>')">
-                                    <% }); %>
+                                    <% oddSem.forEach(sem=> { %>
+                                        <input type="submit" id="<%= sem %>" value="<%= sem %>"
+                                            onclick="setSelectedSemester('<%= sem %>')">
+                                        <% }); %>
                                 </form>
                             </ul>
 
@@ -42,46 +72,72 @@
                             <ul>
                                 <form action="/sem" method="post">
                                     <input type="hidden" name="selectedSemester" id="selectedSemesterEven">
-                                    <% evenSem.forEach(sem => { %>
-                                        <input type="submit" id="<%= sem %>" value="<%= sem %>" onclick="setSelectedSemester('<%= sem %>')">
-                                    <% }); %>
+                                    <% evenSem.forEach(sem=> { %>
+                                        <input type="submit" id="<%= sem %>" value="<%= sem %>"
+                                            onclick="setSelectedSemester('<%= sem %>')">
+                                        <% }); %>
                                 </form>
                             </ul>
                         </div>
                     </section>
-                    <section>
+                    <section class="sem-course-heading">
                         <h3>Add New Course for <%= currentSem %>
                         </h3>
                     </section>
                     <section class="sub-creation">
                         <form action="<%= currentSem.substr(0,1) %>" method="post">
                             <input type="text" name="courseTitle" id="courseTitle" placeholder="Course Title" required>
-                            <input type="text" name="courseCode" id="courseCode" placeholder="Course Code" required>
+                            <input type="text" name="courseCode" id="courseCode" placeholder="Course Code"
+                                style="text-transform:uppercase" required>
                             <input type="number" name="limit" id="limit" placeholder="Maximum Limit" required>
-                            <input type="submit" value="Add to List" id="createCourse">
+                            <input type="submit" value="Add to List" id="createCourse" class="createCourse">
                         </form>
                     </section>
-                    <section>
+                    <section class="dash-table">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Course Title</th>
+                                    <th>Delete Details</th>
+                                    <th class="courseTitle">Course Title</th>
                                     <th>Course Code</th>
-                                    <th>Maximum Set Limit</th>
+                                    <th>Slot Limit</th>
                                     <th>Edit details</th>
+
                                 </tr>
                             </thead>
                             <tbody>
-                                <% currentSemCourses.forEach(course => { %>
+                                <% for(let course of currentSemCourses){ %>
                                     <tr>
-                                        <td><%= course.courseTitle %></td>
-                                        <td><%= course.courseCode %></td>
-                                        <td><%= course.maxLimit %></td>
-                                        <td><button>Edit</button></td>
+                                        <td>
+                                            <form action="delete" method="post">
+                                                <input type="checkbox" onchange="this.form.submit()" name="deleteCourse"
+                                                    value="<%= course.courseCode %>">
+                                            </form>
+                                        </td>
+                                        <td class="courseTitle">
+                                            <%= course.courseTitle %>
+                                        </td>
+                                        <td>
+                                            <%= course.courseCode %>
+                                        </td>
+                                        <td>
+                                            <%= course.maxLimit %>
+                                        </td>
+                                        <td>
+                                            <button onclick="handleChange('<%= course.courseTitle %>', '<%= course.courseCode %>', '<%= course.maxLimit %>')" class="export">
+                                                Edit
+                                            </button>
+                                        </td>
                                     </tr>
-                                <% });  %>
+                                    <% } %>
                             </tbody>
                         </table>
+                    </section>
+                    <section class="merge-btn-div">
+                        <form action="deleteEntry" method="post">
+                            <input type="hidden" name="deleteEntry" value='<%= currentSem.substr(0,1) %>'>
+                            <input type="submit" value="Delete All Entries" class="merge-btn">
+                        </form>
                     </section>
                 </section>
 
@@ -90,31 +146,7 @@
 
 
 </body>
-<script>
-    let getSem = document.getElementById("getSem");
-    let even = document.querySelector(".evenSem");
-    even.style.display = "none";
-    let odd = document.querySelector(".oddSem");
-    odd.style.display = "none";
-    function handleClick() {
+<script type="text/javascript" src="/creation.js"></script>
 
-        getSem.addEventListener('click', () => {
-            let value = document.getElementById("even-odd").value
-            console.log(value)
-            if (value === "odd") {
-                even.style.display = "none";
-                odd.style.display = "block";
-            } else if (value === "even") {
-                even.style.display = "block";
-                odd.style.display = "none";
-            }
-        })
-    }
-
-    function setSelectedSemester(sem) {
-            document.getElementById('selectedSemesterEven').value = sem;
-            document.getElementById('selectedSemesterOdd').value = sem;
-        }
-</script>
 
 </html>
